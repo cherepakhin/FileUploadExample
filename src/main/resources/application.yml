@@ -1,0 +1,4 @@
+spring:
+  mvc:
+    locale: ru_RU
+    locale-resolver: FIXED

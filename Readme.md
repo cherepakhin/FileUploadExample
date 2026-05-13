@@ -2,16 +2,26 @@
 
 __Themleaf + Bootstrap.__ 
 
-java 8
-http://127.0.0.1:8080/upload
+Использована java 8.
 
+Запуск:
+````shell
 ./run.sh
+````
+
+Открыть браузер по адресу [http://127.0.0.1:8080/upload](http://127.0.0.1:8080/upload).
 
 ![doc/screen1.png](doc/screen1.png)
 
-Ключевое в Homepage.html и UploadController.java
+### Ключевые моменты по загрузке файла в Homepage.html и UploadController.java.
 
-Homepage.html:
+Homepage.html. Важное тут:
+
+1. POST 
+2. action="/upload"
+3. enctype="multipart/form-data"
+4. <input type="file" ... />):
+5. Ну и <input type="submit"...
 
 ````html
 			<div class="col-md-6">
@@ -28,7 +38,7 @@ Homepage.html:
 
 ````
 
-UploadController.java:
+UploadController.java (внимание на __POST__, __@MultipartFile__):
 
 ````java
 	@PostMapping("/upload")
