@@ -20,7 +20,7 @@ Homepage.html. Важное тут:
 1. POST 
 2. action="/upload"
 3. enctype="multipart/form-data"
-4. <input type="file" ... />):
+4. <input type="file" ... />) //  type="file"
 5. Ну и <input type="submit"...
 
 ````html
@@ -84,3 +84,5 @@ UploadController.java (внимание на __POST__, __@MultipartFile__):
 ````
  Если Validate вернет true, то форма отправляется на сервер через метод POST на url "/upload" (внимание на "enctype="multipart/form-data").
  Файл цепляется в <input type="file" name="file"  />, переменная для файла называется "file" (name="file").
+ 
+Использован bootstrap. __Не переделывать!__
