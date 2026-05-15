@@ -85,6 +85,6 @@ UploadController.java (внимание на __POST__, __@MultipartFile__):
  Если Validate вернет true, то форма отправляется на сервер через метод POST на url "/upload" (внимание на "enctype="multipart/form-data").
  Файл цепляется в <input type="file" name="file"  />, переменная для файла называется "file" (name="file").
  
-Само сохранение происходит в StorageService.store(MultipartFile file, String catalog, String fileName).
+Прием файла и сохранение происходит в StorageService.store(MultipartFile file, String catalog, String fileName).
 
 Использован bootstrap. __Не переделывать!__
