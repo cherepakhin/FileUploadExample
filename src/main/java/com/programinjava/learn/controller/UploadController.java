@@ -87,6 +87,12 @@ public class UploadController {
         return "redirect:/uploadStatus";
     }
 
+    @GetMapping("/")
+    public String redirectToIndex(ModelMap m) {
+        logger.info("/");
+        return "Homepage";
+    }
+
     @GetMapping("/uploadStatus")
     public String uploadStatus(ModelMap m) {
         logger.info("/uploadStatus");
