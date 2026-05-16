@@ -1,6 +1,5 @@
 package com.programinjava.learn.service;
 
-import com.programinjava.learn.controller.UploadController;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -25,14 +24,16 @@ public class StorageService {
     /**
      * Save the uploaded files
      *
-     * @param file         - content
-     * @param fileName     - name (temp.csv)
-     * @param catalog - (/home/vasi/temp/1)
+     * @param file     - content
+     * @param fileName - name (temp.csv)
+     * @param catalog  - (/home/vasi/temp/1)
      */
-    public boolean store(MultipartFile file, String catalog, String fileName ) {
+    public boolean store(MultipartFile file, String catalog, String fileName) {
+        log.info("Store method");
         log.info("Multipart name: {}", file.getName());
-        log.info("Multipart OriginalFilename={}", file.getOriginalFilename());
-        log.info("Store method. fileName {}, catalog {}", fileName, catalog);
+        log.info("Multipart OriginalFilename: {}", file.getOriginalFilename());
+        log.info("fileName: {}", fileName);
+        log.info("catalog: {}", catalog);
         try {
             rootLocation = Paths.get(catalog);
             //TODO: change to format string
@@ -73,8 +74,5 @@ public class StorageService {
         } else {
             FileSystemUtils.deleteRecursively(rootLocation.toFile());
         }
-
     }
-
-
 }

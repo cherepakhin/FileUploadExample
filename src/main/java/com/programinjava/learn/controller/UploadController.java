@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class UploadController {
@@ -21,10 +24,11 @@ public class UploadController {
 
     @Autowired
     StorageService storageService;
-
+    private String lastSavedFile = null;
     //	CHANGE IT ACCORDING TO YOUR LOCATION
     //TODO: change to user home directory
-    private final String CATALOG_FOR_SAVE = "/home/vasi/temp/1";
+    private final String CATALOG_FOR_SAVE = "/temp/1";
+    private List<String> listLoadedFiles = new ArrayList<>();
 
     /* call from Homepage.html:
             <div class="col-md-6">
@@ -51,6 +55,11 @@ public class UploadController {
             return "redirect:uploadStatus";
         }
 //        String UploadedFolderLocation = CATALOG_FOR_SAVE + "/";
+
+        String userHomeDir = System.getProperty("user.home");
+        logger.info("Домашний каталог пользователя: {}", userHomeDir); //  /home/vasi
+
+
         String fileName = file.getOriginalFilename();
 //			this is done to work on IE as well
 //        String pattern = Pattern.quote(System.getProperty("file.separator"));
@@ -61,11 +70,18 @@ public class UploadController {
 //            fileName = str[0];
         logger.info("FileName : " + fileName);
         // save file to disk
-        if (!storageService.store(file, CATALOG_FOR_SAVE, fileName)) {
+        if (!storageService.store(file, userHomeDir + CATALOG_FOR_SAVE, fileName)) {
             redirectAttributes.addFlashAttribute("message", "Error occurred while uploading the file");
             redirectAttributes.addFlashAttribute("status", "false");
             return "redirect:/uploadStatus";
         }
+        String catalogForSave = new StringBuilder(userHomeDir).append(CATALOG_FOR_SAVE).toString();
+        logger.info("last saved file: {}/{}", catalogForSave, fileName);
+
+        if (!listLoadedFiles.contains(fileName)) {
+            listLoadedFiles.add(fileName);
+        }
+
         redirectAttributes.addFlashAttribute("message", "You successfully uploaded '" + fileName + "'");
         redirectAttributes.addFlashAttribute("status", "true");
         return "redirect:/uploadStatus";
@@ -86,6 +102,17 @@ public class UploadController {
     @GetMapping("/deleteAll")
     public String deleteAll() {
         logger.info("deleteAll");
+        String userHomeDir = System.getProperty("user.home");
+        if (listLoadedFiles.size() > 0) {
+            for (String f : listLoadedFiles) {
+                logger.info("Delete file: {}", f);
+                try {
+                    Files.delete(Paths.get(userHomeDir + CATALOG_FOR_SAVE + "/" + f));   // TODO check it works or not);
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
+            }
+        }
         return "Homepage";
     }
 
