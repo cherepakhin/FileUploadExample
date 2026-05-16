@@ -9,10 +9,15 @@ export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
 mvn -N wrapper:wrapper -Dmaven=3.6.3
 ````
 
-
 Запуск:
 ````shell
 ./run.sh
+````
+
+При сбоях перекомпилировать проект командой:
+
+````shell
+./mvnw clean package
 ````
 
 Открыть браузер по адресу [http://127.0.0.1:8080/upload](http://127.0.0.1:8080/upload).
