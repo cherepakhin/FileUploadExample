@@ -38,12 +38,17 @@ public class StorageService {
             rootLocation = Paths.get(catalog);
             //TODO: change to format string
             log.info("rootLocation:" + rootLocation);
-            // StandardCopyOption.REPLACE_EXISTING - replace existing file
-            //System.getProperty("user.home")
+            // rootLocation:/home/vasi/temp/1
+
+            log.info("user.home: " + System.getProperty("user.home"));
+            // user.home: /home/vasi
+
             log.info("rootLocation.resolve: " + this.rootLocation.resolve(fileName));
-            //log:  rootLocation.resolve: /home/vasi/temp/1/temp.csv , see UploadController.CATALOG_FOR_SAVE
+            // log:  rootLocation.resolve: /home/vasi/temp/1/temp.csv
+            // see UploadController.CATALOG_FOR_SAVE
             // rootLocation = Paths.get("~/temp/input_data.txt")
 
+            // StandardCopyOption.REPLACE_EXISTING - replace existing file
             if (Files.copy(file.getInputStream(), this.rootLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING) > 0) {
                 System.out.println(this.rootLocation.resolve(fileName)); // /home/vasi/temp/1/temp.csv
                 return true;
