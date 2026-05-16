@@ -107,7 +107,7 @@ public class UploadController {
             for (String f : listLoadedFiles) {
                 logger.info("Delete file: {}", f);
                 try {
-                    Files.delete(Paths.get(userHomeDir + CATALOG_FOR_SAVE + "/" + f));   // TODO check it works or not);
+                    Files.delete(Paths.get(userHomeDir + CATALOG_FOR_SAVE + "/" + f));
                 } catch (IOException e) {
                     logger.error(e.getMessage());
                 }
