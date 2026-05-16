@@ -13,7 +13,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,7 +47,7 @@ public class UploadController {
 
      */
     @PostMapping("/upload")
-    public String singleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+    public String singleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         logger.info("POST /upload");
         logger.info("Multipart name: {}", file.getName());
         logger.info("Multipart OriginalFilename={}", file.getOriginalFilename());
@@ -81,15 +80,22 @@ public class UploadController {
         String catalogForSave = new StringBuilder(userHomeDir).append(CATALOG_FOR_SAVE).toString();
         logger.info("last saved file: {}/{}", catalogForSave, fileName);
 
-        lastSavedFile = catalogForSave +"/"+fileName;
+        lastSavedFile = catalogForSave + "/" + fileName;
 
+        redirectAttributes.addFlashAttribute("listLoadedFiles", listLoadedFiles);
         if (!listLoadedFiles.contains(fileName)) {
             listLoadedFiles.add(fileName);
+            redirectAttributes.addFlashAttribute("fileName", fileName);
+            redirectAttributes.addFlashAttribute("message", "You successfully uploaded '" + fileName + "'");
+            redirectAttributes.addFlashAttribute("status", "true");
+            return "redirect:/uploadStatus";
+        } else {
+            redirectAttributes.addFlashAttribute("fileName", fileName);
+            redirectAttributes.addFlashAttribute("message", "File " + fileName + " already loaded");
+            redirectAttributes.addFlashAttribute("status", "true");
+            return "redirect:/uploadStatus";
         }
 
-        redirectAttributes.addFlashAttribute("message", "You successfully uploaded '" + fileName + "'");
-        redirectAttributes.addFlashAttribute("status", "true");
-        return "redirect:/uploadStatus";
     }
 
     @GetMapping("/")
@@ -123,12 +129,14 @@ public class UploadController {
                     logger.error(e.getMessage());
                 }
             }
+            listLoadedFiles = new ArrayList<>();
         }
         return "Homepage";
     }
 
     /**
      * Получение последнего загруженного файла
+     *
      * @param modelMap
      * @return
      */
@@ -136,7 +144,7 @@ public class UploadController {
     public String getLastUploaded(ModelMap modelMap) {
         logger.info("GET /getLastUploaded");
         logger.info("lastSavedFile: {}", this.lastSavedFile);
-        if(lastSavedFile !=null ) {
+        if (lastSavedFile != null) {
             Path path = Paths.get(this.lastSavedFile);
             try {
                 String content = Files.readString(path, Charset.forName("UTF-8"));
@@ -144,6 +152,8 @@ public class UploadController {
             } catch (IOException e) {
                 logger.error("{}", e.getMessage());
             }
+        } else {
+            modelMap.addAttribute("lastSavedFileContent", "");
         }
         return "Homepage";
     }
