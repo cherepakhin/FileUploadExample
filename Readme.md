@@ -2,7 +2,13 @@
 
 __Themleaf + Bootstrap.__ 
 
-Использована java 8.
+Использована java 11.
+
+````java
+export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+mvn -N wrapper:wrapper -Dmaven=3.6.3
+````
+
 
 Запуск:
 ````shell

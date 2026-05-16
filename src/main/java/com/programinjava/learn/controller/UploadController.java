@@ -12,7 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +81,8 @@ public class UploadController {
         String catalogForSave = new StringBuilder(userHomeDir).append(CATALOG_FOR_SAVE).toString();
         logger.info("last saved file: {}/{}", catalogForSave, fileName);
 
+        lastSavedFile = catalogForSave +"/"+fileName;
+
         if (!listLoadedFiles.contains(fileName)) {
             listLoadedFiles.add(fileName);
         }
@@ -122,4 +127,24 @@ public class UploadController {
         return "Homepage";
     }
 
+    /**
+     * Получение последнего загруженного файла
+     * @param modelMap
+     * @return
+     */
+    @GetMapping("/getLastUploaded")
+    public String getLastUploaded(ModelMap modelMap) {
+        logger.info("GET /getLastUploaded");
+        logger.info("lastSavedFile: {}", this.lastSavedFile);
+        if(lastSavedFile !=null ) {
+            Path path = Paths.get(this.lastSavedFile);
+            try {
+                String content = Files.readString(path, Charset.forName("UTF-8"));
+                modelMap.addAttribute("lastSavedFileContent", content);
+            } catch (IOException e) {
+                logger.error("{}", e.getMessage());
+            }
+        }
+        return "Homepage";
+    }
 }
