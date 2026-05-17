@@ -99,3 +99,5 @@ UploadController.java (внимание на __POST__, __@MultipartFile__):
 Cохранение происходит в StorageService.store(MultipartFile file, String catalog, String fileName).
 
 Использован bootstrap. __Не переделывать!__
+
+branch __v01__ - все работает.
