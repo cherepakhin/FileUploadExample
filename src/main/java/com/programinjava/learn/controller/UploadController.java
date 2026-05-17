@@ -3,6 +3,7 @@ package com.programinjava.learn.controller;
 import com.programinjava.learn.service.StorageService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,22 +29,29 @@ public class UploadController {
     StorageService storageService;
     //	CHANGE IT ACCORDING TO YOUR LOCATION
     //TODO: change to user home directory
-    private final String CATALOG_FOR_SAVE = "/temp/1";
+    @Value("${myconfig.catalogForSave}")
+    String catalogForSave = "";
+
+    public UploadController() {
+        logger.info("=====================");
+        logger.info("Catalog For Save location= '{}'", catalogForSave);
+        logger.info("=====================");
+    }
 
     /* call from Homepage.html:
-            <div class="col-md-6">
-                <form method="POST" action="/upload" <---- post /upload
-                    onsubmit="return Validate(this);" enctype="multipart/form-data">
-                    <div class="col-sm-6">
-                        <input type="file" name="file"  /> <----- name="file" for post @RequestParam("file")
-                    </div>
-                    <div class="col-sm-6">
-                        <input type="submit" class="btn btn-success btn-sm" value="Upload data" />
-                    </div>
-                </form>
-            </div>
+                <div class="col-md-6">
+                    <form method="POST" action="/upload" <---- post /upload
+                        onsubmit="return Validate(this);" enctype="multipart/form-data">
+                        <div class="col-sm-6">
+                            <input type="file" name="file"  /> <----- name="file" for post @RequestParam("file")
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="submit" class="btn btn-success btn-sm" value="Upload data" />
+                        </div>
+                    </form>
+                </div>
 
-     */
+         */
     @PostMapping("/upload")
     public String singleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes, ModelMap modelMap) {
         logger.info("POST /upload");
@@ -57,7 +65,7 @@ public class UploadController {
 //        String UploadedFolderLocation = CATALOG_FOR_SAVE + "/";
 
         logger.info("Домашний каталог пользователя: {}", userHomeDir); //  /home/vasi
-
+        logger.info("Catalog for save: {}", catalogForSave);
 
         String fileName = file.getOriginalFilename();
 //			this is done to work on IE as well
@@ -67,15 +75,15 @@ public class UploadController {
 //            fileName = str[str.length - 1];
 //        else
 //            fileName = str[0];
-        logger.info("FileName : " + fileName);
+        logger.info("FileName : {}", fileName);
         // save file to disk
-        if (!storageService.store(file, userHomeDir + CATALOG_FOR_SAVE, fileName)) {
+        if (!storageService.store(file, userHomeDir + catalogForSave, fileName)) {
             redirectAttributes.addFlashAttribute("message", "Error occurred while uploading the file");
             redirectAttributes.addFlashAttribute("status", "false");
             return "redirect:/uploadStatus";
         }
-        String catalogForSave = userHomeDir + CATALOG_FOR_SAVE;
-        logger.info("last saved file: {}/{}", catalogForSave, fileName);
+        String catalog = userHomeDir + catalogForSave;
+        logger.info("last saved file: {}/{}", catalog, fileName);
 
         List<String> listLoadedFiles = storageService.getHistoryLoadedFiles();
         redirectAttributes.addFlashAttribute("listLoadedFiles", listLoadedFiles);
@@ -94,6 +102,7 @@ public class UploadController {
     @GetMapping("/")
     public String redirectToIndex(ModelMap m) {
         logger.info("/");
+        logger.info("catalogForSave: {}", catalogForSave);
         return "Homepage";
     }
 
@@ -111,6 +120,7 @@ public class UploadController {
 
     /**
      * Удаляет все загруженные файлы из каталога для сохранения CATALOG_FOR_SAVED
+     *
      * @return - HomePage
      */
     @GetMapping("/deleteAll")
@@ -121,7 +131,7 @@ public class UploadController {
             for (String f : storageService.getHistoryLoadedFiles()) {
                 logger.info("Delete file: {}", f);
                 try {
-                    Files.delete(Paths.get(userHomeDir + CATALOG_FOR_SAVE + "/" + f));
+                    Files.delete(Paths.get(userHomeDir + catalogForSave + "/" + f));
                 } catch (IOException e) {
                     logger.error(e.getMessage());
                 }
@@ -142,8 +152,8 @@ public class UploadController {
         logger.info("GET /getLastUploaded");
         if (!storageService.getHistoryLoadedFiles().isEmpty()) {
             int historySize = storageService.getHistoryLoadedFiles().size();
-            String catalogForSave = new StringBuilder(userHomeDir).append(CATALOG_FOR_SAVE).toString();
-            Path path = Paths.get(catalogForSave + '/' + getStorageService().getHistoryLoadedFiles().get(historySize - 1));
+            String catalog = userHomeDir + catalogForSave;
+            Path path = Paths.get(catalog + '/' + getStorageService().getHistoryLoadedFiles().get(historySize - 1));
             try {
                 String content = Files.readString(path, Charset.forName("UTF-8"));
                 logger.info("Content of last loaded File:\n{}\r\n", content);
