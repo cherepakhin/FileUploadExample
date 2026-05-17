@@ -90,7 +90,6 @@
 		<div id="uploadstatus" th:if="${message}">
 			<B>Status</B>
 			<h6 th:text="${message}" />
-
 		</div>
 	</div>
 	<br/>
@@ -104,15 +103,15 @@
 		<div class="col-md-12" style='padding-top: 1em; padding-left: 0'>
 			<form method="GET" action="/getLastUploaded">
 				<div class="col-sm-6">
-					<input type="submit" class="btn btn-warning btn-sm" value="Get content" />
+					<input type="submit" class="btn btn-warning btn-sm" value="Get content LAST loaded file" />
 				</div>
 			</form>
 		</div>
 		<br/>
 		Content LAST loaded file <span th:text="${fileName}"></span>:
 		<br/>
-		<div id="idContentLastLoadedFileContent" th:if="${lastSavedFileContent}" class="col-sm-12">
-			<div th:text="${lastSavedFileContent}" />
+		<div id="idContentLastLoadedFileContent" th:if="${contentLastSavedFile}" class="col-sm-12">
+			<div th:text="${contentLastSavedFile}" />
 		</div>
 	</div>
 </body>

@@ -16,21 +16,19 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class UploadController {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UploadController.class);
+    private static final String userHomeDir = System.getProperty("user.home");
 
     @Autowired
     StorageService storageService;
-    private String lastSavedFile = null;
     //	CHANGE IT ACCORDING TO YOUR LOCATION
     //TODO: change to user home directory
     private final String CATALOG_FOR_SAVE = "/temp/1";
-    private List<String> listLoadedFiles = new ArrayList<>();
 
     /* call from Homepage.html:
             <div class="col-md-6">
@@ -58,7 +56,6 @@ public class UploadController {
         }
 //        String UploadedFolderLocation = CATALOG_FOR_SAVE + "/";
 
-        String userHomeDir = System.getProperty("user.home");
         logger.info("Домашний каталог пользователя: {}", userHomeDir); //  /home/vasi
 
 
@@ -80,21 +77,17 @@ public class UploadController {
         String catalogForSave = new StringBuilder(userHomeDir).append(CATALOG_FOR_SAVE).toString();
         logger.info("last saved file: {}/{}", catalogForSave, fileName);
 
-        lastSavedFile = catalogForSave + "/" + fileName;
-
+        List<String> listLoadedFiles = storageService.getHistoryLoadedFiles();
         redirectAttributes.addFlashAttribute("listLoadedFiles", listLoadedFiles);
-        if (!listLoadedFiles.contains(fileName)) {
-            listLoadedFiles.add(fileName);
-            redirectAttributes.addFlashAttribute("fileName", fileName);
-            redirectAttributes.addFlashAttribute("message", "You successfully uploaded '" + fileName + "'");
-            redirectAttributes.addFlashAttribute("status", "true");
-            return "redirect:/uploadStatus";
-        } else {
-            redirectAttributes.addFlashAttribute("fileName", fileName);
-            redirectAttributes.addFlashAttribute("message", "File " + fileName + " already loaded");
-            redirectAttributes.addFlashAttribute("status", "true");
-            return "redirect:/uploadStatus";
-        }
+
+//        listLoadedFiles.add(fileName);
+
+        redirectAttributes.addFlashAttribute("fileName", fileName);
+        redirectAttributes.addFlashAttribute("message", "You successfully uploaded '" + fileName + "'");
+        redirectAttributes.addFlashAttribute("status", "true");
+        redirectAttributes.addFlashAttribute("getLastUploaded", storageService.getHistoryLoadedFiles());
+
+        return "redirect:/uploadStatus";
 
     }
 
@@ -116,12 +109,16 @@ public class UploadController {
         return "Homepage";
     }
 
+    /**
+     * Удаляет все загруженные файлы из каталога для сохранения CATALOG_FOR_SAVED
+     * @return
+     */
     @GetMapping("/deleteAll")
     public String deleteAll() {
         logger.info("deleteAll");
         String userHomeDir = System.getProperty("user.home");
-        if (listLoadedFiles.size() > 0) {
-            for (String f : listLoadedFiles) {
+        if (storageService.getHistoryLoadedFiles().size() > 0) {
+            for (String f : storageService.getHistoryLoadedFiles()) {
                 logger.info("Delete file: {}", f);
                 try {
                     Files.delete(Paths.get(userHomeDir + CATALOG_FOR_SAVE + "/" + f));
@@ -129,7 +126,7 @@ public class UploadController {
                     logger.error(e.getMessage());
                 }
             }
-            listLoadedFiles = new ArrayList<>();
+            storageService.clearHistory();
         }
         return "Homepage";
     }
@@ -143,17 +140,20 @@ public class UploadController {
     @GetMapping("/getLastUploaded")
     public String getLastUploaded(ModelMap modelMap) {
         logger.info("GET /getLastUploaded");
-        logger.info("lastSavedFile: {}", this.lastSavedFile);
-        if (lastSavedFile != null) {
-            Path path = Paths.get(this.lastSavedFile);
+        if (storageService.getHistoryLoadedFiles().size() > 0) {
+            int historySize = storageService.getHistoryLoadedFiles().size();
+            String catalogForSave = new StringBuilder(userHomeDir).append(CATALOG_FOR_SAVE).toString();
+            Path path = Paths.get(catalogForSave + '/' + storageService.getHistoryLoadedFiles().get(historySize - 1));
             try {
                 String content = Files.readString(path, Charset.forName("UTF-8"));
-                modelMap.addAttribute("lastSavedFileContent", content);
+                logger.info("Content of last loaded File:\n{}\r\n", content);
+                modelMap.addAttribute("contentLastSavedFile", content);
+                modelMap.addAttribute("listLoadedFiles", storageService.getHistoryLoadedFiles());
+                modelMap.addAttribute("fileName", path.getFileName());
+
             } catch (IOException e) {
                 logger.error("{}", e.getMessage());
             }
-        } else {
-            modelMap.addAttribute("lastSavedFileContent", "");
         }
         return "Homepage";
     }

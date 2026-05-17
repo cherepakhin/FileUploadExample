@@ -12,6 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
 
 
 @Service
@@ -20,7 +24,8 @@ public class StorageService {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(StorageService.class);
 
     private Path rootLocation = Paths.get("~/temp/input_data.txt");
-
+    // static!!!
+    private static List<String> historyLoadedFiles = new ArrayList<>();
     /**
      * Save the uploaded files
      *
@@ -34,6 +39,7 @@ public class StorageService {
         log.info("Multipart OriginalFilename: {}", file.getOriginalFilename());
         log.info("fileName: {}", fileName);
         log.info("catalog: {}", catalog);
+        historyLoadedFiles.add(fileName);
         try {
             rootLocation = Paths.get(catalog);
             //TODO: change to format string
@@ -79,5 +85,13 @@ public class StorageService {
         } else {
             FileSystemUtils.deleteRecursively(rootLocation.toFile());
         }
+    }
+
+    public static List<String> getHistoryLoadedFiles() {
+        return historyLoadedFiles;
+    }
+
+    public static void clearHistory() {
+        historyLoadedFiles.clear();
     }
 }
