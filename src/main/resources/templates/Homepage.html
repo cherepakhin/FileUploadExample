@@ -71,7 +71,7 @@
 	</div>
 	<nav role="navigation" id="trainingset-container-id"
 		class="navbar navbar-default">
-		<div class="row" style="margin-top: 10px;">
+		<div class="row" style="margin-top: 1rem; margin-bottom: 1rem;">
 			<div class="col-md-12">
 				<form method="POST" action="/upload"
 					onsubmit="return Validate(this);" enctype="multipart/form-data">
@@ -82,13 +82,6 @@
 					<input id="choose_file" type="file" name="file"  style="display: none;"  accept=".csv" value="Выбрать файл:"/>
 					&nbsp;
 					<input type="submit" class="col-md-2 btn btn-primary"   style="height: 2.6em;" value="2. Загрузить"/>
-				</form>
-			</div>
-			<div class="col-md-12" style='padding-top: 1em'>
-				<form method="GET" action="/deleteAll">
-					<div class="col-sm-6">
-						<input type="submit" class="btn btn-danger btn-sm" value="Удалить все" />
-					</div>
 				</form>
 			</div>
 		</div>
@@ -119,6 +112,11 @@
 		<div id="idContentLastLoadedFileContent" th:if="${contentLastSavedFile}" class="col-sm-12">
 			<div th:text="${contentLastSavedFile}" />
 		</div>
+	</div>
+	<div class="col-md-12" style='padding-top: 1em'>
+		<form method="GET" action="/deleteAll">
+			<input type="submit" class="btn btn-danger btn-sm" value="4. Удалить загруженное" />
+		</form>
 	</div>
 </body>
 </html>

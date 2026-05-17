@@ -74,7 +74,7 @@ public class UploadController {
             redirectAttributes.addFlashAttribute("status", "false");
             return "redirect:/uploadStatus";
         }
-        String catalogForSave = new StringBuilder(userHomeDir).append(CATALOG_FOR_SAVE).toString();
+        String catalogForSave = userHomeDir + CATALOG_FOR_SAVE;
         logger.info("last saved file: {}/{}", catalogForSave, fileName);
 
         List<String> listLoadedFiles = storageService.getHistoryLoadedFiles();
@@ -111,7 +111,7 @@ public class UploadController {
 
     /**
      * Удаляет все загруженные файлы из каталога для сохранения CATALOG_FOR_SAVED
-     * @return
+     * @return - HomePage
      */
     @GetMapping("/deleteAll")
     public String deleteAll() {
@@ -126,7 +126,7 @@ public class UploadController {
                     logger.error(e.getMessage());
                 }
             }
-            storageService.clearHistory();
+            getStorageService().clearHistory();
         }
         return "Homepage";
     }
@@ -135,20 +135,20 @@ public class UploadController {
      * Получение последнего загруженного файла
      *
      * @param modelMap
-     * @return
+     * @return - string HomePage
      */
     @GetMapping("/getLastUploaded")
     public String getLastUploaded(ModelMap modelMap) {
         logger.info("GET /getLastUploaded");
-        if (storageService.getHistoryLoadedFiles().size() > 0) {
+        if (!storageService.getHistoryLoadedFiles().isEmpty()) {
             int historySize = storageService.getHistoryLoadedFiles().size();
             String catalogForSave = new StringBuilder(userHomeDir).append(CATALOG_FOR_SAVE).toString();
-            Path path = Paths.get(catalogForSave + '/' + storageService.getHistoryLoadedFiles().get(historySize - 1));
+            Path path = Paths.get(catalogForSave + '/' + getStorageService().getHistoryLoadedFiles().get(historySize - 1));
             try {
                 String content = Files.readString(path, Charset.forName("UTF-8"));
                 logger.info("Content of last loaded File:\n{}\r\n", content);
                 modelMap.addAttribute("contentLastSavedFile", content);
-                modelMap.addAttribute("listLoadedFiles", storageService.getHistoryLoadedFiles());
+                modelMap.addAttribute("listLoadedFiles", getStorageService().getHistoryLoadedFiles());
                 modelMap.addAttribute("fileName", path.getFileName());
 
             } catch (IOException e) {
@@ -156,5 +156,13 @@ public class UploadController {
             }
         }
         return "Homepage";
+    }
+
+    public StorageService getStorageService() {
+        return storageService;
+    }
+
+    public void setStorageService(StorageService storageService) {
+        this.storageService = storageService;
     }
 }

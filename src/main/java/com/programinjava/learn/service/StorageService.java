@@ -13,9 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Stack;
 
 
 @Service
@@ -25,7 +23,8 @@ public class StorageService {
 
     private Path rootLocation = Paths.get("~/temp/input_data.txt");
     // static!!!
-    private static List<String> historyLoadedFiles = new ArrayList<>();
+    private static final List<String> historyLoadedFiles = new ArrayList<>();
+
     /**
      * Save the uploaded files
      *
