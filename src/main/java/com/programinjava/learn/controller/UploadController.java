@@ -83,7 +83,7 @@ public class UploadController {
 //        listLoadedFiles.add(fileName);
 
         redirectAttributes.addFlashAttribute("fileName", fileName);
-        redirectAttributes.addFlashAttribute("message", "You successfully uploaded '" + fileName + "'");
+        redirectAttributes.addFlashAttribute("message", "Загружен файл '" + fileName + "'");
         redirectAttributes.addFlashAttribute("status", "true");
         redirectAttributes.addFlashAttribute("getLastUploaded", storageService.getHistoryLoadedFiles());
 

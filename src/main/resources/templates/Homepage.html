@@ -57,10 +57,16 @@
 
 	<div class="container-fluid padding-0">
 		<div class="row padding-0">
-			<div class="col-md-4">
-				<h2>File Upload Example</h2>
+			<div class="col-md-12">
+				<h2>Пример загрузки файлов с помощью Spring Boot</h2>
 			</div>
-			<div class="col-md-4" align="right"></div>
+			<br/>
+			<div class="col-md-12">Последовательность проведения опыта:</div>
+			<ol>
+				<li>Выбрать файл для загрузки через кнопку "Выбрать файл".</li>
+				<li>Нажать кнопку "Были загружены файлы". В списке "История" появится имя загруженного фала.</li>
+				<li>После этого можно посмотреть содержимое последнего загруженного файла через кнопку "3. Показать содержимое последнего загруженного файлa". </li>
+			</ol>
 		</div>
 	</div>
 	<nav role="navigation" id="trainingset-container-id"
@@ -70,17 +76,18 @@
 				<form method="POST" action="/upload"
 					onsubmit="return Validate(this);" enctype="multipart/form-data">
 					<div class="col-md-2">
-						<B>Upload File</B>
+						<b>Загрузка файлов</b>
 					</div>
-					<input type="file" class="col-md-2 btn btn-primary" name="file"  style="height: 2.6em; margin-right: 1em;"  accept=".csv"/>
+					<label for="choose_file" class="col-md-2 btn btn-primary" style="height: 2.6em; margin-right: 1em;">1. Выбрать файл</label>
+					<input id="choose_file" type="file" name="file"  style="display: none;"  accept=".csv" value="Выбрать файл:"/>
 					&nbsp;
-					<input type="submit" class="col-md-2 btn btn-primary"   style="height: 2.6em;" value="Загрузить"/>
+					<input type="submit" class="col-md-2 btn btn-primary"   style="height: 2.6em;" value="2. Загрузить"/>
 				</form>
 			</div>
 			<div class="col-md-12" style='padding-top: 1em'>
 				<form method="GET" action="/deleteAll">
 					<div class="col-sm-6">
-						<input type="submit" class="btn btn-danger btn-sm" value="Delete all data" />
+						<input type="submit" class="btn btn-danger btn-sm" value="Удалить все" />
 					</div>
 				</form>
 			</div>
@@ -88,27 +95,26 @@
 	</nav>
 	<div id="messageboxid">
 		<div id="uploadstatus" th:if="${message}">
-			<B>Status</B>
+			<B>Статус:</B>
 			<h6 th:text="${message}" />
 		</div>
 	</div>
 	<br/>
-	<b>History:</b><br/>
+	<b>Были загружены файлы:</b><br/>
 	<div th:each="currentFilename : ${listLoadedFiles}">
 		<span th:text="${currentFilename}"></span>
 	</div>
 	<br/>
 	<div id="download">
-		<b>Download last uploaded</b>
 		<div class="col-md-12" style='padding-top: 1em; padding-left: 0'>
 			<form method="GET" action="/getLastUploaded">
 				<div class="col-sm-6">
-					<input type="submit" class="btn btn-warning btn-sm" value="Get content LAST loaded file" />
+					<input type="submit" class="btn btn-warning btn-sm" value="3. Показать содержимое последнего загруженного файлa" />
 				</div>
 			</form>
 		</div>
 		<br/>
-		Content LAST loaded file <span th:text="${fileName}"></span>:
+		Содержимое последнего загруженного файла <span th:text="${fileName}"></span>:
 		<br/>
 		<div id="idContentLastLoadedFileContent" th:if="${contentLastSavedFile}" class="col-sm-12">
 			<div th:text="${contentLastSavedFile}" />
