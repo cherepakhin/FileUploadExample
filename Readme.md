@@ -101,3 +101,10 @@ Cохранение происходит в StorageService.store(MultipartFile f
 Использован bootstrap. __Не переделывать!__
 
 branch __v01__ - все работает.
+
+Каталог для сохранения файлов задан как константа в application.yml
+
+````yaml
+myconfig:
+  catalogForSave: /temp/1
+````
