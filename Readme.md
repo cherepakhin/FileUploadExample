@@ -108,3 +108,11 @@ branch __v01__ - все работает.
 myconfig:
   catalogForSave: /temp/1
 ````
+
+### Примечания
+
+Детали обмена данными клиента с сервером удобнее смотреть в Firefox 
+
+![doc/firefox_post.png](doc/firefox_post.png)
+
+(слева найти POST запрос "/upload", справа детали в Request)
