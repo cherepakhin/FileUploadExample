@@ -109,6 +109,23 @@ myconfig:
   catalogForSave: /temp/1
 ````
 
+### Создание запускаемого файла и его запуск
+
+Выполнить package.sh:
+
+````shell
+export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+./mvnw clean package -DskipTests
+````
+
+Собранный файл будет в target/FileUploadExample-0.0.1-SNAPSHOT.jar
+
+Запуск:
+
+````shell
+/usr/lib/jvm/java-1.11.0-openjdk-amd64/bin/java -jar target/FileUploadExample-0.0.1-SNAPSHOT.jar
+````
+
 ### Примечания
 
 Детали обмена данными клиента с сервером удобнее смотреть в Firefox (в Chrome не нашел подобного)
