@@ -4,6 +4,11 @@ import com.programinjava.learn.service.StorageService;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -166,6 +172,29 @@ public class UploadController {
             }
         }
         return "Homepage";
+    }
+
+    @GetMapping(value = "/getAsFile", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<Resource> downloadLastFile() throws MalformedURLException {
+        if (!storageService.getHistoryLoadedFiles().isEmpty()) {
+            String catalog = userHomeDir + catalogForSave;
+            int historySize = storageService.getHistoryLoadedFiles().size();
+            Path path = Paths.get(catalog + '/' + getStorageService().getHistoryLoadedFiles().get(historySize - 1));
+
+            Resource data = new UrlResource(path.toUri());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // Указываем, что это бинарные данные
+            headers.setContentDispositionFormData("filename", getStorageService().getHistoryLoadedFiles().get(historySize - 1)); // Устанавливаем имя файла для загрузки
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(data);
+        } else {
+            Resource resource = new UrlResource("");
+            return ResponseEntity.badRequest()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
+
+        }
     }
 
     public StorageService getStorageService() {
